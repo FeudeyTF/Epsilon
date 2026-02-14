@@ -1,2 +1,2 @@
-# CMath
-Library for calculation math in C#
+# Epsilon
+Library, that contains mathematics abstractions and methods in C#
