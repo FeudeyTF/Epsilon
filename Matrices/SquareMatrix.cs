@@ -107,34 +107,5 @@ namespace Epsilon.Matrices
 			TValue multiplier = (row + column) % 2 == 0 ? TValue.One : -TValue.One;
 			return multiplier * GetMinor(row, column);
 		}
-
-		public (SquareMatrix<TValue> l, SquareMatrix<TValue> u) Decompose()
-		{
-			SquareMatrix<TValue> l = new(Size);
-			SquareMatrix<TValue> u = new(Size);
-			for (int i = 0; i < l.Size; i++)
-				l[i, i] = TValue.One;
-
-			for (int i = 0; i < l.Size; i++)
-			{
-				for (int j = 0; j < l.Size; j++)
-				{
-					TValue s = TValue.Zero;
-					if (i <= j)
-					{
-						for (int k = 0; k < i; k++)
-							s += l[i, k] * u[k, j];
-						u[i, j] = this[i, j] - s;
-					}
-					else
-					{
-						for (int k = 0; k < j; k++)
-							s += l[i, k] * u[k, j];
-						l[i, j] = (this[i, j] - s) / u[j, j];
-					}
-				}
-			}
-			return (l, u);
-		}
 	}
 }
