@@ -11,6 +11,11 @@ namespace Epsilon.Matrices
 			Size = size;
 		}
 
+		public Vector(TValue[][] values) : base(values)
+		{
+			Size = values.Length;
+		}
+
 		public TValue this[int row]
 		{
 			get => _values[row][0];

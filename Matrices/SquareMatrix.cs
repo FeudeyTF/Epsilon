@@ -11,6 +11,11 @@ namespace Epsilon.Matrices
 			Size = size;
 		}
 
+		public SquareMatrix(TValue[][] values) : base(values)
+		{
+			Size = values.Length;
+		}
+
 		public SquareMatrix<TValue> Transpose()
 		{
 			for (int i = 0; i < _values.Length; i++)
