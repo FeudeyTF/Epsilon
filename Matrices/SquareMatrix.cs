@@ -39,7 +39,9 @@ namespace Epsilon.Matrices
 					matrix[j, i] = GetCofactor(i, j);
 			}
 
-			matrix.Multiply(TValue.One / determinant);
+			for (int i = 0; i < matrix.Size; i++)
+				for (int j = 0; j < matrix.Size; j++)
+					matrix[i, j] /= determinant;
 			return matrix;
 		}
 

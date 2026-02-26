@@ -24,18 +24,29 @@ namespace Epsilon.Matrices
 
 		public Matrix<TValue> Add(Matrix<TValue> matrix)
 		{
+			var result = Copy();
 			for (int i = 0; i < _values.Length; i++)
 				for (int j = 0; j < _values[i].Length; j++)
-					this[i, j] += matrix[i, j];
-			return this;
+					result[i, j] += matrix[i, j];
+			return result;
+		}
+
+		public Matrix<TValue> Subtract(Matrix<TValue> matrix)
+		{
+			var result = Copy();
+			for (int i = 0; i < _values.Length; i++)
+				for (int j = 0; j < _values[i].Length; j++)
+					result[i, j] -= matrix[i, j];
+			return result;
 		}
 
 		public Matrix<TValue> Multiply(TValue value)
 		{
+			var result = Copy();
 			for (int i = 0; i < Rows; i++)
 				for (int j = 0; j < Columns; j++)
-					this[i, j] *= value;
-			return this;
+					result[i, j] *= value;
+			return result;
 		}
 
 		public Matrix<TValue> Multiply(Matrix<TValue> matrix)
@@ -61,6 +72,15 @@ namespace Epsilon.Matrices
 
 		}
 
+		public Matrix<TValue> Copy()
+		{
+			Matrix<TValue> r = new(Rows, Columns);
+			for(int i = 0; i < Rows; i++)
+				for(int j = 0; j < Columns; j++)
+					r[i, j] = this[i, j];
+			return r;
+		}
+
 		public TValue this[int row, int column]
 		{
 			get => _values[row][column];
@@ -77,6 +97,9 @@ namespace Epsilon.Matrices
 
 		public static Matrix<TValue> operator +(Matrix<TValue> a, Matrix<TValue> b)
 			=> a.Add(b);
+
+		public static Matrix<TValue> operator -(Matrix<TValue> a, Matrix<TValue> b)
+			=> a.Subtract(b);
 
 		public static Matrix<TValue> operator *(Matrix<TValue> a, Matrix<TValue> b)
 			=> a.Multiply(b);
