@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace Epsilon.Matrices
 {
-	public class Matrix<TValue> where TValue : INumberBase<TValue>
+	public class Matrix<TValue> : IMultiplyOperators<Matrix<TValue>, TValue, Matrix<TValue>> where TValue : INumberBase<TValue>
 	{
 		public int Rows => _values.Length;
 
@@ -106,5 +106,8 @@ namespace Epsilon.Matrices
 
 		public static Matrix<TValue> operator *(Matrix<TValue> a, TValue b)
 			=> a.Multiply(b);
+
+		public static Matrix<TValue> operator *(TValue a, Matrix<TValue> b)
+			=> b.Multiply(a);
 	}
 }
