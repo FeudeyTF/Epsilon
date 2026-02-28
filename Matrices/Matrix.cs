@@ -1,32 +1,37 @@
+using System.Collections;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Epsilon.Matrices
 {
-	public class Matrix<TValue> : IMultiplyOperators<Matrix<TValue>, TValue, Matrix<TValue>> where TValue : INumberBase<TValue>
+	[CollectionBuilder(typeof(MatrixBuilder), nameof(MatrixBuilder.Create))]
+	public class Matrix<TValue> : IEnumerable<TValue>, IMultiplyOperators<Matrix<TValue>, TValue, Matrix<TValue>> where TValue : INumberBase<TValue>
 	{
-		public int Rows => _values.Length;
+		public int Rows { get; private set; }
 
-		public int Columns => _values.FirstOrDefault()?.Length ?? 0;
+		public int Columns { get; private set; }
 
-		protected readonly TValue[][] _values;
+		protected TValue[] _values;
+
+		public Matrix(ReadOnlySpan<TValue> values)
+		{
+			Rows = 1;
+			Columns = values.Length;
+			_values = values.ToArray();
+		}
 
 		public Matrix(int rows, int columns)
 		{
-			_values = new TValue[rows][];
-			for (int x = 0; x < rows; x++)
-				_values[x] = new TValue[columns];
-		}
-
-		public Matrix(TValue[][] values)
-		{
-			_values = values;
+			Rows = rows;
+			Columns = columns;
+			_values = new TValue[Rows * Columns];
 		}
 
 		public Matrix<TValue> Add(Matrix<TValue> matrix)
 		{
 			var result = Copy();
-			for (int i = 0; i < _values.Length; i++)
-				for (int j = 0; j < _values[i].Length; j++)
+			for (int i = 0; i < Rows; i++)
+				for (int j = 0; j < Columns; j++)
 					result[i, j] += matrix[i, j];
 			return result;
 		}
@@ -34,8 +39,8 @@ namespace Epsilon.Matrices
 		public Matrix<TValue> Subtract(Matrix<TValue> matrix)
 		{
 			var result = Copy();
-			for (int i = 0; i < _values.Length; i++)
-				for (int j = 0; j < _values[i].Length; j++)
+			for (int i = 0; i < Rows; i++)
+				for (int j = 0; j < Columns; j++)
 					result[i, j] -= matrix[i, j];
 			return result;
 		}
@@ -69,23 +74,33 @@ namespace Epsilon.Matrices
 		{
 			for (int k = 0; k < Rows; k++)
 				(this[k, i], this[k, j]) = (this[k, j], this[k, i]);
-
 		}
 
 		public Matrix<TValue> Copy()
 		{
 			Matrix<TValue> r = new(Rows, Columns);
-			for(int i = 0; i < Rows; i++)
-				for(int j = 0; j < Columns; j++)
+			for (int i = 0; i < Rows; i++)
+				for (int j = 0; j < Columns; j++)
 					r[i, j] = this[i, j];
 			return r;
 		}
 
 		public TValue this[int row, int column]
 		{
-			get => _values[row][column];
-			set => _values[row][column] = value;
+			get => _values[row * Columns + column];
+			set => _values[row * Columns + column] = value;
 		}
+
+		public IEnumerator<TValue> GetEnumerator()
+		{
+			for (int i = 0; i < Rows; i++)
+			{
+				for (int j = 0; j < Columns; j++)
+					yield return this[i, j];
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 		public override string ToString()
 		{
@@ -109,5 +124,29 @@ namespace Epsilon.Matrices
 
 		public static Matrix<TValue> operator *(TValue a, Matrix<TValue> b)
 			=> b.Multiply(a);
+
+		public static implicit operator Matrix<TValue>(TValue[][] array)
+		{
+			var rows = array.Length;
+			if (rows == 0)
+				throw new Exception("Array's length must be greater than 0");
+			var columns = array.First().Length;
+			if (columns == 0)
+				throw new Exception("Array's first value length must be greater than 0");
+
+			Matrix<TValue> result = new(rows, columns);
+			for (int i = 0; i < rows; i++)
+				for (int j = 0; j < columns; j++)
+					result[i, j] = array[i][j];
+			return result;
+		}
+	}
+
+	internal static class MatrixBuilder
+	{
+		public static Matrix<TValue> Create<TValue>(ReadOnlySpan<TValue> values) where TValue : INumberBase<TValue>
+		{
+			return new(values);
+		}
 	}
 }

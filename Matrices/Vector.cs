@@ -1,31 +1,39 @@
+using System.Collections;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Epsilon.Matrices
 {
-	public class Vector<TValue> : Matrix<TValue> where TValue : INumberBase<TValue>
+	[CollectionBuilder(typeof(VectorBuilder), nameof(VectorBuilder.Create))]
+	public class Vector<TValue> : Matrix<TValue>, IEnumerable<TValue> where TValue : INumberBase<TValue>
 	{
 		public int Size { get; }
+
+		public Vector(ReadOnlySpan<TValue> buffer) : base(buffer.Length, 1)
+		{
+		}
 
 		public Vector(int size) : base(size, 1)
 		{
 			Size = size;
 		}
 
-		public Vector(TValue[][] values) : base(values)
+		public TValue this[int index]
 		{
-			Size = values.Length;
+			get => _values[index];
+			set => _values[index] = value;
 		}
 
-		public TValue this[int row]
+		public new IEnumerator<TValue> GetEnumerator()
 		{
-			get => _values[row][0];
-			set => _values[row][0] = value;
+			for (int i = 0; i < Size; i++)
+				yield return this[i];
 		}
 
 		public static Vector<TValue> operator *(TValue a, Vector<TValue> b)
 		{
 			Vector<TValue> result = new(b.Size);
-			for(int i = 0; i < b.Size; i++)
+			for (int i = 0; i < b.Size; i++)
 				result[i] = b[i] * a;
 			return result;
 		}
@@ -33,17 +41,30 @@ namespace Epsilon.Matrices
 		public static Vector<TValue> operator +(Vector<TValue> a, Vector<TValue> b)
 		{
 			Vector<TValue> result = new(b.Size);
-			for(int i = 0; i < b.Size; i++)
+			for (int i = 0; i < b.Size; i++)
 				result[i] = b[i] + a[i];
 			return result;
 		}
 
-		public static implicit operator Vector<TValue>(TValue[] values)
+		public static implicit operator Vector<TValue>(TValue[] array)
 		{
-			Vector<TValue> result = new(values.Length);
-			for(int i = 0; i < values.Length; i++)
-				result[i] = values[i];
+			var size = array.Length;
+			if (size == 0)
+				throw new Exception("Array's length must be greater than 0");
+
+			Vector<TValue> result = new(size);
+			for (int i = 0; i < size; i++)
+				result[i] = array[i];
 			return result;
+		}
+
+	}
+
+	internal static class VectorBuilder
+	{
+		internal static Vector<TValue> Create<TValue>(ReadOnlySpan<TValue> values) where TValue : INumberBase<TValue>
+		{
+			return new(values);
 		}
 	}
 }

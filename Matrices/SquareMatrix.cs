@@ -1,29 +1,24 @@
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Epsilon.Matrices
 {
+	[CollectionBuilder(typeof(SquareMatrixBuilder), nameof(SquareMatrixBuilder.Create))]
 	public class SquareMatrix<TValue> : Matrix<TValue> where TValue : INumberBase<TValue>
 	{
 		public int Size { get; }
 
+		public SquareMatrix(ReadOnlySpan<TValue> values) : base((int)System.Math.Sqrt(values.Length), (int)System.Math.Sqrt(values.Length))
+		{
+			var size = (int)System.Math.Sqrt(values.Length);
+			if (size * size != values.Length)
+				throw new Exception("Invalid array size!");
+			_values = values.ToArray();
+		}
+
 		public SquareMatrix(int size) : base(size, size)
 		{
 			Size = size;
-		}
-
-		public SquareMatrix(TValue[][] values) : base(values)
-		{
-			Size = values.Length;
-		}
-
-		public SquareMatrix<TValue> Transpose()
-		{
-			for (int i = 0; i < _values.Length; i++)
-			{
-				for (int j = 0; j < _values[i].Length; j++)
-					(_values[i][j], _values[j][i]) = (_values[j][i], _values[i][j]);
-			}
-			return this;
 		}
 
 		public SquareMatrix<TValue> Invert()
@@ -113,6 +108,27 @@ namespace Epsilon.Matrices
 		{
 			TValue multiplier = (row + column) % 2 == 0 ? TValue.One : -TValue.One;
 			return multiplier * GetMinor(row, column);
+		}
+
+		public static implicit operator SquareMatrix<TValue>(TValue[][] array)
+		{
+			var size = array.Length;
+			if (size == 0)
+				throw new Exception("Array's length must be greater than 0");
+
+			SquareMatrix<TValue> result = new(size);
+			for (int i = 0; i < size; i++)
+				for (int j = 0; j < size; j++)
+					result[i, j] = array[i][j];
+			return result;
+		}
+	}
+
+	internal static class SquareMatrixBuilder
+	{
+		public static SquareMatrix<TValue> Create<TValue>(ReadOnlySpan<TValue> values) where TValue : INumberBase<TValue>
+		{
+			return new(values);
 		}
 	}
 }
