@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace Epsilon.Matrices
 {
 	[CollectionBuilder(typeof(VectorBuilder), nameof(VectorBuilder.Create))]
-	public class Vector<TValue> : Matrix<TValue>, IEnumerable<TValue> where TValue : INumberBase<TValue>
+	public class Vector<TValue> : Matrix<TValue> where TValue : INumberBase<TValue>
 	{
 		public int Size { get; }
 
