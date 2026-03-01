@@ -9,12 +9,15 @@ namespace Epsilon.Matrices
 	{
 		public int Size { get; }
 
-		public Vector(ReadOnlySpan<TValue> buffer) : base(buffer.Length, 1)
+		public Vector(ReadOnlySpan<TValue> buffer) : this(buffer.Length)
 		{
+			_values = buffer.ToArray();
 		}
 
 		public Vector(int size) : base(size, 1)
 		{
+			if (size == 0)
+				throw new Exception("Vector's size must be greater than zero!");
 			Size = size;
 		}
 
@@ -49,9 +52,6 @@ namespace Epsilon.Matrices
 		public static implicit operator Vector<TValue>(TValue[] array)
 		{
 			var size = array.Length;
-			if (size == 0)
-				throw new Exception("Array's length must be greater than 0");
-
 			Vector<TValue> result = new(size);
 			for (int i = 0; i < size; i++)
 				result[i] = array[i];
@@ -60,9 +60,9 @@ namespace Epsilon.Matrices
 
 	}
 
-	internal static class VectorBuilder
+	public static class VectorBuilder
 	{
-		internal static Vector<TValue> Create<TValue>(ReadOnlySpan<TValue> values) where TValue : INumberBase<TValue>
+		public static Vector<TValue> Create<TValue>(ReadOnlySpan<TValue> values) where TValue : INumberBase<TValue>
 		{
 			return new(values);
 		}

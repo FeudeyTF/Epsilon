@@ -124,7 +124,7 @@ namespace Epsilon.Matrices
 		}
 	}
 
-	internal static class SquareMatrixBuilder
+	public static class SquareMatrixBuilder
 	{
 		public static SquareMatrix<TValue> Create<TValue>(ReadOnlySpan<TValue> values) where TValue : INumberBase<TValue>
 		{

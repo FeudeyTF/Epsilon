@@ -105,8 +105,12 @@ namespace Epsilon.Matrices
 		public override string ToString()
 		{
 			string result = "";
-			for (int i = 0; i < _values.Length; i++)
-				result += $"({string.Join(", ", _values[i])})\n";
+			for (int i = 0; i < Rows; i++)
+			{
+				for(int j = 0; j < Columns; j++)
+					result += $"({this[i, j]})";
+				result += '\n';
+			}
 			return result;
 		}
 
@@ -142,7 +146,7 @@ namespace Epsilon.Matrices
 		}
 	}
 
-	internal static class MatrixBuilder
+	public static class MatrixBuilder
 	{
 		public static Matrix<TValue> Create<TValue>(ReadOnlySpan<TValue> values) where TValue : INumberBase<TValue>
 		{
