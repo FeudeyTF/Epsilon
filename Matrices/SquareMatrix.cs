@@ -8,17 +8,13 @@ namespace Epsilon.Matrices
 	{
 		public int Size { get; }
 
-		public SquareMatrix(ReadOnlySpan<TValue> values) : base((int)System.Math.Sqrt(values.Length), (int)System.Math.Sqrt(values.Length))
-		{
-			var size = (int)System.Math.Sqrt(values.Length);
-			if (size * size != values.Length)
-				throw new Exception("Invalid array size!");
-			_values = values.ToArray();
-		}
-
 		public SquareMatrix(int size) : base(size, size)
 		{
 			Size = size;
+		}
+
+		public SquareMatrix(ReadOnlySpan<TValue[]> values) : base(values)
+		{
 		}
 
 		public SquareMatrix<TValue> Invert()
@@ -126,7 +122,7 @@ namespace Epsilon.Matrices
 
 	public static class SquareMatrixBuilder
 	{
-		public static SquareMatrix<TValue> Create<TValue>(ReadOnlySpan<TValue> values) where TValue : INumberBase<TValue>
+		public static SquareMatrix<TValue> Create<TValue>(ReadOnlySpan<TValue[]> values) where TValue : INumberBase<TValue>
 		{
 			return new(values);
 		}

@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace Epsilon.Matrices
 {
 	[CollectionBuilder(typeof(MatrixBuilder), nameof(MatrixBuilder.Create))]
-	public class Matrix<TValue> : IEnumerable<TValue>, IMultiplyOperators<Matrix<TValue>, TValue, Matrix<TValue>> where TValue : INumberBase<TValue>
+	public class Matrix<TValue> : IEnumerable<TValue[]>, IMultiplyOperators<Matrix<TValue>, TValue, Matrix<TValue>> where TValue : INumberBase<TValue>
 	{
 		public int Rows { get; private set; }
 
@@ -13,18 +13,30 @@ namespace Epsilon.Matrices
 
 		protected TValue[] _values;
 
-		public Matrix(ReadOnlySpan<TValue> values)
-		{
-			Rows = 1;
-			Columns = values.Length;
-			_values = values.ToArray();
-		}
-
 		public Matrix(int rows, int columns)
 		{
 			Rows = rows;
 			Columns = columns;
 			_values = new TValue[Rows * Columns];
+		}
+
+		public Matrix(ReadOnlySpan<TValue[]> values)
+		{
+			if (values.Length == 0)
+				throw new Exception("Matrix can't be empty!");
+			var firstRow = values[0];
+			if (firstRow.Length == 0)
+				throw new Exception("Matrix can't be empty!");
+
+			Rows = values.Length;
+			Columns = firstRow.Length;
+			_values = new TValue[Rows * Columns];
+
+			for (int i = 0; i < Rows; i++)
+			{
+				for (int j = 0; j < Columns; j++)
+					this[i, j] = values[i][j];
+			}
 		}
 
 		public Matrix<TValue> Transpose()
@@ -102,12 +114,14 @@ namespace Epsilon.Matrices
 			set => _values[row * Columns + column] = value;
 		}
 
-		public IEnumerator<TValue> GetEnumerator()
+		public IEnumerator<TValue[]> GetEnumerator()
 		{
 			for (int i = 0; i < Rows; i++)
 			{
+				TValue[] result = new TValue[Columns];
 				for (int j = 0; j < Columns; j++)
-					yield return this[i, j];
+					result[i] = this[i, j];
+				yield return result;
 			}
 		}
 
@@ -118,7 +132,7 @@ namespace Epsilon.Matrices
 			string result = "";
 			for (int i = 0; i < Rows; i++)
 			{
-				for(int j = 0; j < Columns; j++)
+				for (int j = 0; j < Columns; j++)
 					result += $"({this[i, j]})";
 				result += '\n';
 			}
@@ -139,27 +153,11 @@ namespace Epsilon.Matrices
 
 		public static Matrix<TValue> operator *(TValue a, Matrix<TValue> b)
 			=> b.Multiply(a);
-
-		public static implicit operator Matrix<TValue>(TValue[][] array)
-		{
-			var rows = array.Length;
-			if (rows == 0)
-				throw new Exception("Array's length must be greater than 0");
-			var columns = array.First().Length;
-			if (columns == 0)
-				throw new Exception("Array's first value length must be greater than 0");
-
-			Matrix<TValue> result = new(rows, columns);
-			for (int i = 0; i < rows; i++)
-				for (int j = 0; j < columns; j++)
-					result[i, j] = array[i][j];
-			return result;
-		}
 	}
 
 	public static class MatrixBuilder
 	{
-		public static Matrix<TValue> Create<TValue>(ReadOnlySpan<TValue> values) where TValue : INumberBase<TValue>
+		public static Matrix<TValue> Create<TValue>(ReadOnlySpan<TValue[]> values) where TValue : INumberBase<TValue>
 		{
 			return new(values);
 		}
