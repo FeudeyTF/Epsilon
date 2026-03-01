@@ -27,6 +27,17 @@ namespace Epsilon.Matrices
 			_values = new TValue[Rows * Columns];
 		}
 
+		public Matrix<TValue> Transpose()
+		{
+			Matrix<TValue> result = new(Columns, Rows);
+			for (int i = 0; i < Rows; i++)
+			{
+				for (int j = 0; j < Columns; j++)
+					result[j, i] = this[i, j];
+			}
+			return result;
+		}
+
 		public Matrix<TValue> Add(Matrix<TValue> matrix)
 		{
 			var result = Copy();
