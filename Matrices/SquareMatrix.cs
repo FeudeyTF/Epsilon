@@ -15,6 +15,7 @@ namespace Epsilon.Matrices
 
 		public SquareMatrix(ReadOnlySpan<TValue[]> values) : base(values)
 		{
+			Size = values.Length;
 		}
 
 		public SquareMatrix<TValue> Invert()
