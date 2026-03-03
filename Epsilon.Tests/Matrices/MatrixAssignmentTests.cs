@@ -14,7 +14,7 @@ namespace Epsilon.Tests.Matrices
 				[4, 5, 6]
 			];
 
-			Assert.That(matrix.Rows, Is.EqualTo(2));
+			Assert.That(matrix.Rows, Is.EqualTo(3));
 			Assert.That(matrix.Columns, Is.EqualTo(3));
 
 			for (int i = 0; i < matrix.Rows; i++)
