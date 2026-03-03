@@ -12,8 +12,9 @@
 </div>
 
 ## Features
-    - Matrices and vectors
-    - Matrix decompositions
-    - Interpolation methods
-    - Integration methods
-    - Solvers for linear and differential systems
+
+- Matrices and vectors
+- Matrix decompositions
+- Interpolation methods
+- Integration methods
+- Solvers for linear and differential systems
