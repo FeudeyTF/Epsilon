@@ -1,11 +1,10 @@
 using Epsilon.Matrices;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
-namespace Epsilon.Tests
+namespace Epsilon.Tests.Matrices
 {
 	[TestFixture, Category("Matrices")]
-	public class MatrixTests
+	public class MatrixAssignmentTests
 	{
 		[Test]
 		public void MatrixAssignmentTest()
