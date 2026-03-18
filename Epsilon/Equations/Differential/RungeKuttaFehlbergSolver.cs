@@ -38,7 +38,10 @@ namespace Epsilon.Equations.Differential
 			_relativeError = relativeError;
 		}
 
-		public double Evaluate(double x)
+		double IDifferentialEquationSolver.Evaluate(double x)
+			=> Evaluate(x)[0];
+
+		public Vector<double> Evaluate(double x)
 		{
 			double h = 0.001;
 			double t = _startX;
@@ -74,7 +77,7 @@ namespace Epsilon.Equations.Differential
 
 				h = 0.84 * h * System.Math.Pow(error / tolerance, 0.25);
 			}
-			return y[0];
+			return y;
 		}
 	}
 }
